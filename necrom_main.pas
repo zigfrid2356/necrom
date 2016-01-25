@@ -22,11 +22,32 @@
 }
 
 
-program untitled;
+program necrom_main;
 
 uses crt;
 var i : byte;
+procedure main_menu;
+begin
 
+repeat begin//1
+ClrScr;
+writeln	('1- ',text[10]);
+writeln	('2- ',text[9]);
+writeln	('3- ',text[17]);
+menu_key:=readkey;
+case menu_key of
+'1': begin //1.1
+	end;//1.1
+'2':	begin//1.2
+	end;//1.2
+
+'3': begin//1.4
+end;//1.4
+end;
+end;//2 
+until menu_key='0';
+
+end;
 BEGIN
 	
 	
