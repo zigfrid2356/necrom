@@ -82,8 +82,13 @@ end;//2
 end;
 
 function necr_bild(in_bild:necr;command:byte):necr;
+var sc:char;
 begin
 //1-tower, 2-dungeon, 3-warior, 4-work
+ClrScr;
+writeln	('1- ',text[38],'2- ',text[39],'3- ',text[41],'4- ',text[40]);
+readln(sc);
+command:=strtoint(sc);
 if command = 1 then begin//1.1
 if in_bild.gold>=10 then begin in_bild.tower:=in_bild.tower+1;in_bild.gold:=in_bild.gold-10; end else writeln	(text[7]);
 
@@ -113,7 +118,8 @@ if (in_bild.body>=1)and(in_bild.gold>=3)and(in_bild.mana>=3) then begin//4.2
 if in_bild.gold<3 then writeln	(text[7]);
 if in_bild.mana<3 then writeln	(text[9]);
 end;//4.1
-necr_bild:=in_bild
+necr_bild:=in_bild;
+readln
 end;
 
 function necr_command(in_command:necr; command:byte):necr;
@@ -264,7 +270,7 @@ main_menu;
 //*********************************************************************
 repeat //begin//1
 ClrScr;
-writeln	(text[20],nd.n_m_n,text[21],inttostr(nd.n_y));
+writeln	(text[20],nd.n_m_n,'; ',text[21],inttostr(nd.n_y));
 writeln	('1- ',text[4]);
 writeln	('2- ',text[22]);
 writeln	('3- ',text[23]);
@@ -277,6 +283,7 @@ case menu_key of
 necr_info
 	end;//1.1
 '2':	begin//1.2
+necr_bild(nc,1);
 	end;//1.2
 
 '3': begin//1.4
@@ -286,6 +293,7 @@ end;//1.4
 end;//1.5
 
 '5': begin//1.6
+nd:=necr_date_create(2,nd);
 end;//1.6
 end;//1	
 until menu_key='0';	
