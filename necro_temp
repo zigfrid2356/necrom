@@ -1,0 +1,4 @@
+necr=record
+tower, dungeon, body, warior, work, necropolis:word;
+gold, mana:integer;
+end;

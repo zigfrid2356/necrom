@@ -31,6 +31,12 @@ necr=record
 tower, dungeon, body, warior, work, necropolis:word;
 gold, mana:integer;
 end;
+
+necr_date=record
+n_y:word;
+n_m:byte;
+n_m_n:string[30];
+end;
 //*****//
 var 
 i : word;
@@ -41,7 +47,7 @@ lang_s:string[5];
 log:string[10];
 
 nc:necr;
-
+nd:necr_date;
 function necr_create(command:string):necr;
 var
 koeff:byte;
@@ -57,6 +63,22 @@ necr_create.work:=2;
 necr_create.necropolis:=10-koeff; 
 necr_create.gold:=10-koeff;  
 necr_create.mana:=4-koeff; 
+end;
+
+function necr_date_create(command:byte; in_nd:necr_date):necr_date;
+//1-create, 2-month+1
+begin
+if command =1 then begin//1
+necr_date_create.n_y:=1300;
+necr_date_create.n_m:=1;
+necr_date_create.n_m_n:=text[10];
+end;//1
+if command =2 then begin//2
+if in_nd.n_m<10 then in_nd.n_m:=in_nd.n_m+1;
+if in_nd.n_m=10 then begin in_nd.n_m:=1; in_nd.n_y:=in_nd.n_y+1; end;
+in_nd.n_m_n:=text[in_nd.n_m+9];
+necr_date_create:=in_nd;
+end;//2
 end;
 
 function necr_bild(in_bild:necr;command:byte):necr;
@@ -105,6 +127,11 @@ procedure necr_sound(so:byte);
 var
 nsi,nsj:word;
 fl:boolean;
+samplerate:real; // частота сэмпла
+wavefrequency:real; // частота волны
+wavevolume:real; // громкость волны
+period,pi:real;
+n,a:real;
 begin
 
 nsi:=200;
@@ -141,13 +168,32 @@ end;//3.1
 end;//3
 
 
+if so=3 then begin//4
+samplerate:=180; // частота сэмпла
+wavefrequency:=200; // частота волны
+wavevolume:=300; // громкость волны
+a:=0;
+period:=samplerate / wavefrequency /2; //вычисляем период волны
+pi:=3.14; //число pi
+n:=0; 
+
+for nsi:=0 to 20 do begin 
+a:=a+1;
+
+n:=wavevolume*sin(a*pi / period); //вычисление sine-волны
+sound(abs(round(n)));
+//writeln(abs(round(n)));
+delay(abs(round(n))+100);
+nosound;
+end;
+end;//4
+nosound;
 end;
 
 procedure main_menu;
 begin//0
 writeln	(text[1]);
-//necr_sound(2);
-//sleep(5000);
+//necr_sound(3);
 writeln	(text[6]);
 readln();
 repeat //begin//1
@@ -160,6 +206,8 @@ menu_key:=readkey;
 case menu_key of
 '1': begin //1.1
 nc:=necr_create('normal');
+nd:=necr_date_create(1,nd);
+menu_key:='0';
 	end;//1.1
 '2':	begin//1.2
 	end;//1.2
@@ -173,6 +221,20 @@ until menu_key='0';
 
 end;//0
 
+procedure necr_info;
+begin
+ClrScr;
+writeln	(text[26],nc.tower,text[34]);
+writeln	(text[27],nc.dungeon,text[35]);
+writeln	(text[28],nc.gold);
+writeln	(text[29],nc.mana);
+writeln	(text[30],nc.body,text[36]);
+writeln	(text[31],nc.work,text[36]);
+writeln	(text[32],nc.warior,text[36]);
+writeln	(text[33],nc.necropolis,text[37]);
+writeln	(text[6]);
+readln;
+end;
 
 
 BEGIN
@@ -199,6 +261,35 @@ i:=i+1;
 end;
 close(lang);
 main_menu;
+//*********************************************************************
+repeat //begin//1
+ClrScr;
+writeln	(text[20],nd.n_m_n,text[21],inttostr(nd.n_y));
+writeln	('1- ',text[4]);
+writeln	('2- ',text[22]);
+writeln	('3- ',text[23]);
+writeln	('4- ',text[24]);
+writeln	('5- ',text[25]);
+writeln	(text[5]);
+menu_key:=readkey;
+case menu_key of
+'1': begin //1.1
+necr_info
+	end;//1.1
+'2':	begin//1.2
+	end;//1.2
+
+'3': begin//1.4
+end;//1.4
+
+'4': begin//1.5
+end;//1.5
+
+'5': begin//1.6
+end;//1.6
+end;//1	
+until menu_key='0';	
+	
 	
 END.
 
