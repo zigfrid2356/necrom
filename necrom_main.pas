@@ -277,12 +277,12 @@ function necr_update(in_nu:necr):necr;
 var
 nut:byte;
 begin
-in_nu.gold:=in_nu.gold+in_nu.dungeon;
-in_nu.mana:=in_nu.mana+in_nu.tower+(in_nu.necropolis div 10);
 randomize;
 nut:=random(4);
-
-if nut=2 then in_nu.body:=in_nu.body+(in_nu.necropolis div 10);
+if nut=1 then begin in_nu.gold:=in_nu.gold+in_nu.dungeon; writeln(text[28],' +',in_nu.dungeon); end;
+in_nu.mana:=in_nu.mana+in_nu.tower+(in_nu.necropolis div 10);writeln(text[29],' +',(in_nu.tower+(in_nu.necropolis div 10)));
+nut:=random(in_nu.necropolis);
+if nut=2 then begin in_nu.body:=in_nu.body+(in_nu.necropolis div 10);writeln(text[30],' +',(in_nu.necropolis div 10)); end;
 while in_nu.mana< in_nu.work+(in_nu.warior*2) do begin//1
 if  in_nu.work>0 then  begin in_nu.work:=in_nu.work-1; writeln(text[42],text[29],text[40],text[43]);end;
 if  in_nu.warior>0 then  begin in_nu.warior:=in_nu.warior-1; writeln(text[42],text[29],text[41],text[43]);end;
@@ -290,6 +290,8 @@ end;//1
 in_nu.mana:=in_nu.mana-in_nu.work;
 in_nu.mana:=in_nu.mana-(in_nu.warior*2);
 necr_update:=in_nu;
+writeln	(text[6]);
+readln;
 end;
 BEGIN
 i:=0;
