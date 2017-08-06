@@ -62,7 +62,7 @@ necr_create.warior:=0;
 necr_create.work:=2; 
 necr_create.necropolis:=10-koeff; 
 necr_create.gold:=10-koeff;  
-necr_create.mana:=4-koeff; 
+necr_create.mana:=10-koeff; 
 end;
 
 function necr_date_create(command:byte; in_nd:necr_date):necr_date;
@@ -81,38 +81,44 @@ necr_date_create:=in_nd;
 end;//2
 end;
 
-function necr_bild(in_bild:necr;command:byte):necr;
-var sc:char;
-begin
-//1-tower, 2-dungeon, 3-warior, 4-work
+function necr_bild(in_bild:necr):necr;
+begin//0
+menu_key:='a';
+//1-tower, 2-dungeon, 3-warior, 4-work 5-necropolis
+repeat //begin//11
 ClrScr;
-writeln	('1- ',text[38],'2- ',text[39],'3- ',text[41],'4- ',text[40]);
-readln(sc);
-command:=strtoint(sc);
-if command = 1 then begin//1.1
-if (in_bild.gold>=10)and(in_bild.work>0) then begin in_bild.tower:=in_bild.tower+1;in_bild.gold:=in_bild.gold-10; end else begin //1.2 
+writeln	('1- ',text[38],'2- ',text[39],'3- ',text[41],'4- ',text[40],'5- ',text[45]);
+writeln	(text[5]);
+menu_key:=readkey;
+case menu_key of
+'1':  begin//1.1
+if (in_bild.gold>=10)and(in_bild.work>=(1+in_bild.tower))and((in_bild.necropolis div 10)>=in_bild.tower) then begin in_bild.tower:=in_bild.tower+1;in_bild.gold:=in_bild.gold-10; end else begin //1.2 
 if in_bild.gold<10 then writeln	(text[7]);
-if in_bild.work<=0 then writeln	(text[43], text[43]);
+if in_bild.work<(1+in_bild.tower) then writeln	(text[44], text[40]);
+if (in_bild.necropolis div 10)< in_bild.tower then writeln	(text[44], text[45]);
 end;//1.2
+menu_key:='0';
 end;//1.1
-if command = 2 then begin//2.1
-if (in_bild.gold>=10)and(in_bild.work>0)  then begin in_bild.dungeon:=in_bild.dungeon+1;in_bild.gold:=in_bild.gold-10; end else begin //2.2
+'2': begin//2.1
+if (in_bild.gold>=10)and(in_bild.work>=(1+in_bild.dungeon))  then begin in_bild.dungeon:=in_bild.dungeon+1;in_bild.gold:=in_bild.gold-10; end else begin //2.2
 if in_bild.gold<10 then writeln	(text[7]);
-if in_bild.work<=0 then writeln	(text[43], text[43]);
+if in_bild.work<(1+in_bild.dungeon) then writeln	(text[44], text[40]);
 end;//2.2
+menu_key:='0';
 end;//2.1
-if command = 3 then begin//3.1
-if (in_bild.body>=1)and(in_bild.gold>=5)and(in_bild.mana>=5)  then begin//3.2
+'3': begin//3.1
+if (in_bild.body>=2)and(in_bild.gold>=5)and(in_bild.mana>=5)  then begin//3.2
  in_bild.warior:=in_bild.warior+1;
- in_bild.body:=in_bild.body-1; 
+ in_bild.body:=in_bild.body-2; 
  in_bild.gold:= in_bild.gold-5;
  in_bild.mana:= in_bild.mana-5;
  end;//3.2
-if in_bild.body<1 then writeln	(text[8]);
+if in_bild.body<2 then writeln	(text[8]);
 if in_bild.gold<5 then writeln	(text[7]);
 if in_bild.mana<5 then writeln	(text[9]);
+menu_key:='0';
 end;//3.1
-if command = 4 then begin//4.1
+'4': begin//4.1
 if (in_bild.body>=1)and(in_bild.gold>=3)and(in_bild.mana>=3) then begin//4.2
  in_bild.work:=in_bild.work+1;
  in_bild.body:=in_bild.body-1;
@@ -122,10 +128,29 @@ if (in_bild.body>=1)and(in_bild.gold>=3)and(in_bild.mana>=3) then begin//4.2
  if in_bild.body<1 then writeln	(text[8]);
 if in_bild.gold<3 then writeln	(text[7]);
 if in_bild.mana<3 then writeln	(text[9]);
+menu_key:='0';
 end;//4.1
+'5': begin//5.1
+if (in_bild.gold>=1)and(in_bild.work>=(1+(in_bild.necropolis div 10))) then begin //5.1.1
+in_bild.necropolis:=in_bild.necropolis+1; in_bild.gold:=in_bild.gold-1; 
+writeln	(text[45], ' +1');
+end //5.1.1
+else begin //5.2 
+if in_bild.gold<1 then writeln	(text[7]);
+if in_bild.work<(1+(in_bild.necropolis div 10)) then writeln	(text[44], text[40]);
+end;//5.2
+menu_key:='0';
+end;//5.1
+
+end;//11
 necr_bild:=in_bild;
-readln
-end;
+
+until menu_key='0';	
+writeln	(text[6]);
+readln;
+necr_bild:=in_bild;
+menu_key:='a';
+end;//0
 
 function necr_command(in_command:necr; command:byte):necr;
 begin
@@ -203,6 +228,7 @@ end;
 
 procedure main_menu;
 begin//0
+menu_key:='a';
 writeln	(text[1]);
 //necr_sound(3);
 writeln	(text[6]);
@@ -229,29 +255,34 @@ end;//1.4
 end;//1
 
 until menu_key='0';
-
+menu_key:='a';
 end;//0
 
-procedure necr_info;
+procedure necr_info(ni:necr);
 begin
 ClrScr;
-writeln	(text[26],nc.tower,text[34]);
-writeln	(text[27],nc.dungeon,text[35]);
-writeln	(text[28],nc.gold);
-writeln	(text[29],nc.mana);
-writeln	(text[30],nc.body,text[36]);
-writeln	(text[31],nc.work,text[36]);
-writeln	(text[32],nc.warior,text[36]);
-writeln	(text[33],nc.necropolis,text[37]);
+writeln	(text[26],ni.tower,text[34]);
+writeln	(text[27],ni.dungeon,text[35]);
+writeln	(text[28],ni.gold);
+writeln	(text[29],ni.mana);
+writeln	(text[30],ni.body,text[36]);
+writeln	(text[31],ni.work,text[36]);
+writeln	(text[32],ni.warior,text[36]);
+writeln	(text[33],ni.necropolis,text[37]);
 writeln	(text[6]);
 readln;
 end;
  
 function necr_update(in_nu:necr):necr; 
+var
+nut:byte;
 begin
 in_nu.gold:=in_nu.gold+in_nu.dungeon;
-in_nu.mana:=in_nu.mana+in_nu.tower;
-in_nu.body:=in_nu.body+(in_nu.necropolis div 10);
+in_nu.mana:=in_nu.mana+in_nu.tower+(in_nu.necropolis div 10);
+randomize;
+nut:=random(4);
+
+if nut=2 then in_nu.body:=in_nu.body+(in_nu.necropolis div 10);
 while in_nu.mana< in_nu.work+(in_nu.warior*2) do begin//1
 if  in_nu.work>0 then  begin in_nu.work:=in_nu.work-1; writeln(text[42],text[29],text[40],text[43]);end;
 if  in_nu.warior>0 then  begin in_nu.warior:=in_nu.warior-1; writeln(text[42],text[29],text[41],text[43]);end;
@@ -284,6 +315,7 @@ i:=i+1;
 end;
 close(lang);
 main_menu;
+menu_key:='a';
 //*********************************************************************
 repeat //begin//1
 ClrScr;
@@ -297,10 +329,10 @@ writeln	(text[5]);
 menu_key:=readkey;
 case menu_key of
 '1': begin //1.1
-necr_info
+necr_info(nc);
 	end;//1.1
 '2':	begin//1.2
-necr_bild(nc,1);
+nc:=necr_bild(nc);
 	end;//1.2
 
 '3': begin//1.4
@@ -315,7 +347,7 @@ nc:=necr_update(nc);
 end;//1.6
 end;//1	
 until menu_key='0';	
-	
+menu_key:='a';
 	
 END.
 
